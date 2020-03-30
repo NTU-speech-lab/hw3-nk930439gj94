@@ -174,4 +174,6 @@ for epoch in range(num_epoch):
 	(epoch + 1, num_epoch, time.time()-epoch_start_time, \
 	train_acc/train_val_set.__len__(), train_loss/train_val_set.__len__()))
 
+torch.save(model_best.state_dict(), 'model/cnn')
+
 ########################## train ###########################
