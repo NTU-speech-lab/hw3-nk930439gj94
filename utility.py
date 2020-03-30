@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import cv2
 import torch
@@ -13,7 +14,7 @@ def readfile(path, label):
     y = np.zeros((len(image_dir)), dtype=np.uint8)
     for i, file in enumerate(image_dir):
         img = cv2.imread(os.path.join(path, file))
-        x[i, :, :] = cv2.resize(img,(128, 128))
+        x[i] = cv2.resize(img,(128, 128))
         if label:
           y[i] = int(file.split("_")[0])
     if label:
