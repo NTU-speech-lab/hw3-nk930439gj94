@@ -30,9 +30,11 @@ train_val_loader = DataLoader(train_val_set, batch_size=128, shuffle=True)
 model = Classifier().cuda()
 model.load_state_dict( torch.load('model/cnn') )
 
+train_acc = 0
+
 with torch.no_grad():
 	for i, data in enumerate(train_val_loader):
-		train_pred = model_best(data[0].cuda())
+		train_pred = model(data[0].cuda())
 		train_acc += np.sum(np.argmax(train_pred.cpu().data.numpy(), axis=1) == data[1].numpy())
 
-print( 'Train Acc: %3.6f' % train_acc/train_val_set.__len__() )
+print( 'Train Acc: ', train_acc / len(train_val_set) )
