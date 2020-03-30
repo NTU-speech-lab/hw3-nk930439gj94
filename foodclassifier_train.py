@@ -11,6 +11,8 @@ import time
 import sys
 from utility import *
 
+torch.manual_seed(0)
+
 train_file_path = sys.argv[1]
 valid_file_path = sys.argv[2]
 
@@ -29,19 +31,6 @@ print("Size of validation data = {}".format(len(val_x)))
 
 ####################### prepare data #######################
 
-#training 時做 data augmentation
-train_transform = transforms.Compose([
-	transforms.ToPILImage(),
-	transforms.RandomHorizontalFlip(), #隨機將圖片水平翻轉
-	transforms.RandomRotation(15), #隨機旋轉圖片
-	transforms.ToTensor(), #將圖片轉成 Tensor，並把數值normalize到[0,1](data normalization)
-])
-#testing 時不需做 data augmentation
-test_transform = transforms.Compose([
-	transforms.ToPILImage(),
-	transforms.ToTensor(),
-])
-
 batch_size = 128
 train_set = ImgDataset(train_x, train_y, train_transform)
 val_set = ImgDataset(val_x, val_y, test_transform)
@@ -49,57 +38,6 @@ train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
 
 ####################### prepare data #######################
-
-
-
-########################## model ###########################
-
-class Classifier(nn.Module):
-	def __init__(self):
-		super(Classifier, self).__init__()
-		#torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
-		#torch.nn.MaxPool2d(kernel_size, stride, padding)
-		#input 維度 [3, 128, 128]
-		self.cnn = nn.Sequential(
-			nn.Conv2d(3, 64, 3, 1, 1),  # [64, 128, 128]
-			nn.BatchNorm2d(64),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	  # [64, 64, 64]
-
-			nn.Conv2d(64, 128, 3, 1, 1), # [128, 64, 64]
-			nn.BatchNorm2d(128),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	  # [128, 32, 32]
-
-			nn.Conv2d(128, 256, 3, 1, 1), # [256, 32, 32]
-			nn.BatchNorm2d(256),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	  # [256, 16, 16]
-
-			nn.Conv2d(256, 512, 3, 1, 1), # [512, 16, 16]
-			nn.BatchNorm2d(512),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	   # [512, 8, 8]
-			
-			nn.Conv2d(512, 512, 3, 1, 1), # [512, 8, 8]
-			nn.BatchNorm2d(512),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	   # [512, 4, 4]
-		)
-		self.fc = nn.Sequential(
-			nn.Linear(512*4*4, 1024),
-			nn.ReLU(),
-			nn.Linear(1024, 512),
-			nn.ReLU(),
-			nn.Linear(512, 11)
-		)
-
-	def forward(self, x):
-		out = self.cnn(x)
-		out = out.view(out.size()[0], -1)
-		return self.fc(out)
-
-########################## model ###########################
 
 
 
