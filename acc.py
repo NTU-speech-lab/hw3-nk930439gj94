@@ -12,6 +12,7 @@ import sys
 from utility import *
 
 train_file_path = sys.argv[1]
+valid_file_path = sys.argv[2]
 
 print("Reading data")
 train_x, train_y = readfile(train_file_path, True)
