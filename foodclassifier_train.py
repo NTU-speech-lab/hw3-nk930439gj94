@@ -142,4 +142,36 @@ for epoch in range(num_epoch):
 			(epoch + 1, num_epoch, time.time()-epoch_start_time, \
 			 train_acc/train_set.__len__(), train_loss/train_set.__len__(), val_acc/val_set.__len__(), val_loss/val_set.__len__()))
 
+
+train_val_x = np.concatenate((train_x, val_x), axis=0)
+train_val_y = np.concatenate((train_y, val_y), axis=0)
+train_val_set = ImgDataset(train_val_x, train_val_y, train_transform)
+train_val_loader = DataLoader(train_val_set, batch_size=batch_size, shuffle=True)
+
+model_best = Classifier().cuda()
+loss = nn.CrossEntropyLoss() # 因為是 classification task，所以 loss 使用 CrossEntropyLoss
+optimizer = torch.optim.Adam(model_best.parameters(), lr=0.001) # optimizer 使用 Adam
+num_epoch = 30
+
+for epoch in range(num_epoch):
+    epoch_start_time = time.time()
+    train_acc = 0.0
+    train_loss = 0.0
+
+    model_best.train()
+    for i, data in enumerate(train_val_loader):
+        optimizer.zero_grad()
+        train_pred = model_best(data[0].cuda())
+        batch_loss = loss(train_pred, data[1].cuda())
+        batch_loss.backward()
+        optimizer.step()
+
+        train_acc += np.sum(np.argmax(train_pred.cpu().data.numpy(), axis=1) == data[1].numpy())
+        train_loss += batch_loss.item()
+
+        #將結果 print 出來
+    print('[%03d/%03d] %2.2f sec(s) Train Acc: %3.6f Loss: %3.6f' % \
+      (epoch + 1, num_epoch, time.time()-epoch_start_time, \
+      train_acc/train_val_set.__len__(), train_loss/train_val_set.__len__()))
+
 ########################## train ###########################
