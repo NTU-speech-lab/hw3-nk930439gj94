@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import cv2
 import torch
@@ -6,7 +5,6 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 import pandas as pd
 from torch.utils.data import DataLoader, Dataset
-import time
 
 import sys
 from utility import *
@@ -14,6 +12,7 @@ from utility import *
 test_file_path = sys.argv[1]
 out_file_path = sys.argv[2]
 
+print("Reading data")
 test_x = readfile(test_file_path, False)
 print("Size of Testing data = {}".format(len(test_x)))
 
@@ -23,7 +22,7 @@ test_transform = transforms.Compose([
 ])
 
 test_set = ImgDataset(test_x, transform=test_transform)
-test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
+test_loader = DataLoader(test_set, batch_size=128, shuffle=False)
 
 model = Classifier().cuda()
 model.load_state_dict( torch.load('model/cnn') )
