@@ -48,6 +48,9 @@ loss = nn.CrossEntropyLoss() # 因為是 classification task，所以 loss 使�
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001) # optimizer 使用 Adam
 num_epoch = 30
 
+log_loss = []
+log_acc = []
+
 for epoch in range(num_epoch):
 	epoch_start_time = time.time()
 	train_acc = 0.0
@@ -65,6 +68,9 @@ for epoch in range(num_epoch):
 
 		train_acc += np.sum(np.argmax(train_pred.cpu().data.numpy(), axis=1) == data[1].numpy())
 		train_loss += batch_loss.item()
+
+	log_acc.append(train_acc/train_set.__len__())
+	log_loss.append(train_loss/train_set.__len__())
 	
 	model.eval()
 	with torch.no_grad():
@@ -107,11 +113,15 @@ for epoch in range(num_epoch):
 		train_acc += np.sum(np.argmax(train_pred.cpu().data.numpy(), axis=1) == data[1].numpy())
 		train_loss += batch_loss.item()
 
-		#將結果 print 出來
+	log_acc.append(train_acc/train_val_set.__len__())
+	log_loss.append(train_loss/train_val_set.__len__())
 	print('[%03d/%03d] %2.2f sec(s) Train Acc: %3.6f Loss: %3.6f' % \
 	(epoch + 1, num_epoch, time.time()-epoch_start_time, \
 	train_acc/train_val_set.__len__(), train_loss/train_val_set.__len__()))
 
 torch.save(model_best.state_dict(), 'model/cnn')
+
+np.save('log/log_acc.npy', log_acc)
+np.save('log/log_loss.npy', log_loss)
 
 ########################## train ###########################
