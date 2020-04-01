@@ -1,0 +1,1 @@
+python3 foodclassifier_test.py data/testing out/out.csv

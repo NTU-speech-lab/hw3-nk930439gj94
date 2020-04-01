@@ -44,6 +44,7 @@ val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
 ########################## train ###########################
 
 model = Classifier().cuda()
+print(model)
 loss = nn.CrossEntropyLoss() # 因為是 classification task，所以 loss 使用 CrossEntropyLoss
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001) # optimizer 使用 Adam
 num_epoch = 30
@@ -118,6 +119,8 @@ for epoch in range(num_epoch):
 	print('[%03d/%03d] %2.2f sec(s) Train Acc: %3.6f Loss: %3.6f' % \
 	(epoch + 1, num_epoch, time.time()-epoch_start_time, \
 	train_acc/train_val_set.__len__(), train_loss/train_val_set.__len__()))
+
+print('\n')
 
 torch.save(model_best.state_dict(), 'model/cnn')
 

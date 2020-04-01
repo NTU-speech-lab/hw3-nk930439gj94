@@ -26,7 +26,8 @@ def readfile(path, label):
 train_transform = transforms.Compose([
 	transforms.ToPILImage(),
 	transforms.RandomHorizontalFlip(), #隨機將圖片水平翻轉
-	transforms.RandomRotation(15), #隨機旋轉圖片
+	# transforms.RandomRotation(15), #隨機旋轉圖片
+	transforms.RandomAffine(30, (0.1, 0.1), (1,1.1)),
 	transforms.ToTensor(), #將圖片轉成 Tensor，並把數值normalize到[0,1](data normalization)
 ])
 #testing 時不需做 data augmentation
@@ -101,5 +102,8 @@ class Classifier(nn.Module):
 		out = self.cnn(x)
 		out = out.view(out.size()[0], -1)
 		return self.fc(out)
+	
+	def __str__(self):
+		return self.cnn.__str__() + self.fc.__str__()
 
 ########################## model ###########################

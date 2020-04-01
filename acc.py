@@ -20,7 +20,6 @@ print("Size of training data = {}".format(len(train_x)))
 val_x, val_y = readfile(valid_file_path, True)
 print("Size of validation data = {}".format(len(val_x)))
 
-train_set = ImgDataset(train_x, train_y, train_transform)
 train_val_x = np.concatenate((train_x, val_x), axis=0)
 train_val_y = np.concatenate((train_y, val_y), axis=0)
 train_val_set = ImgDataset(train_val_x, train_val_y, train_transform)
