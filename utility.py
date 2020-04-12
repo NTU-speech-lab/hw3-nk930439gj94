@@ -22,19 +22,6 @@ def readfile(path, label):
 	else:
 		return x
 
-#training 時做 data augmentation
-train_transform = transforms.Compose([
-	transforms.ToPILImage(),
-	transforms.RandomHorizontalFlip(), #隨機將圖片水平翻轉
-	# transforms.RandomRotation(15), #隨機旋轉圖片
-	transforms.RandomAffine(30, (0.1, 0.1), (1,1.1)),
-	transforms.ToTensor(), #將圖片轉成 Tensor，並把數值normalize到[0,1](data normalization)
-])
-#testing 時不需做 data augmentation
-test_transform = transforms.Compose([
-	transforms.ToPILImage(),
-	transforms.ToTensor(),
-])
 
 class ImgDataset(Dataset):
 	def __init__(self, x, y=None, transform=None):
@@ -85,14 +72,18 @@ class Classifier(nn.Module):
 			nn.ReLU(),
 			nn.MaxPool2d(2, 2, 0),	   # [512, 8, 8]
 			
-			nn.Conv2d(512, 512, 3, 1, 1), # [512, 8, 8]
-			nn.BatchNorm2d(512),
+			nn.Conv2d(512, 1024, 3, 1, 1), # [512, 8, 8]
+			nn.BatchNorm2d(1024),
 			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	   # [512, 4, 4]
+			nn.MaxPool2d(2, 2, 0),	   # [1024, 4, 4]
 		)
 		self.fc = nn.Sequential(
-			nn.Linear(512*4*4, 1024),
+			nn.Linear(1024*4*4, 1024*4),
 			nn.ReLU(),
+			nn.Dropout(0.5,True),
+			nn.Linear(1024*4, 1024),
+			nn.ReLU(),
+			nn.Dropout(0.5, True),
 			nn.Linear(1024, 512),
 			nn.ReLU(),
 			nn.Linear(512, 11)
