@@ -20,16 +20,40 @@ valid_file_path = sys.argv[2]
 
 #分別將 training set、validation set 用 readfile 函式讀進來
 print("Reading data")
+
 train_x, train_y = readfile(train_file_path, True)
 print("Size of training data = {}".format(len(train_x)))
+
 val_x, val_y = readfile(valid_file_path, True)
 print("Size of validation data = {}".format(len(val_x)))
+
+train_val_x = np.concatenate((train_x, val_x), axis=0)
+train_val_y = np.concatenate((train_y, val_y), axis=0)
+
+mean_std = [np.mean(train_val_x, axis=(0, 1, 2))/255, np.std(train_val_x, axis=(0, 1, 2))/255]
+np.save('model/mean_std.npy', mean_std)
 
 ######################## read data #########################
 
 
 
 ####################### prepare data #######################
+
+#training 時做 data augmentation
+train_transform = transforms.Compose([
+	transforms.ToPILImage(),
+	transforms.RandomHorizontalFlip(), #隨機將圖片水平翻轉
+	# transforms.RandomRotation(15), #隨機旋轉圖片
+	transforms.RandomAffine(30, (0.1, 0.1), (0.9,1.1)),
+	transforms.ToTensor(), #將圖片轉成 Tensor，並把數值normalize到[0,1](data normalization)
+	transforms.Normalize(mean_std[0], mean_std[1]),
+])
+#testing 時不需做 data augmentation
+test_transform = transforms.Compose([
+	transforms.ToPILImage(),
+	transforms.ToTensor(),
+	transforms.Normalize(mean_std[0], mean_std[1]),
+])
 
 batch_size = 128
 train_set = ImgDataset(train_x, train_y, train_transform)
@@ -47,7 +71,7 @@ model = Classifier().cuda()
 print(model)
 loss = nn.CrossEntropyLoss() # 因為是 classification task，所以 loss 使用 CrossEntropyLoss
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001) # optimizer 使用 Adam
-num_epoch = 30
+num_epoch = 100
 
 log_loss = []
 log_acc = []
@@ -88,15 +112,13 @@ for epoch in range(num_epoch):
 			 train_acc/train_set.__len__(), train_loss/train_set.__len__(), val_acc/val_set.__len__(), val_loss/val_set.__len__()))
 
 
-train_val_x = np.concatenate((train_x, val_x), axis=0)
-train_val_y = np.concatenate((train_y, val_y), axis=0)
 train_val_set = ImgDataset(train_val_x, train_val_y, train_transform)
 train_val_loader = DataLoader(train_val_set, batch_size=batch_size, shuffle=True)
 
 model_best = Classifier().cuda()
 loss = nn.CrossEntropyLoss() # 因為是 classification task，所以 loss 使用 CrossEntropyLoss
 optimizer = torch.optim.Adam(model_best.parameters(), lr=0.001) # optimizer 使用 Adam
-num_epoch = 30
+num_epoch = 100
 
 for epoch in range(num_epoch):
 	epoch_start_time = time.time()

@@ -16,9 +16,12 @@ print("Reading data")
 test_x = readfile(test_file_path, False)
 print("Size of Testing data = {}".format(len(test_x)))
 
+mean_std = np.load('model/mean_std.npy')
+
 test_transform = transforms.Compose([
 	transforms.ToPILImage(),
 	transforms.ToTensor(),
+	transforms.Normalize(mean_std[0], mean_std[1]),
 ])
 
 test_set = ImgDataset(test_x, transform=test_transform)
