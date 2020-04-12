@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, Dataset
 import sys
 from utility import *
 
-test_file_path = sys.argv[1]
+test_file_path = os.path.join(sys.argv[1], 'testing')
 out_file_path = sys.argv[2]
 
 print("Reading data")

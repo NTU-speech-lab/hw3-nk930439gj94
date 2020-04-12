@@ -1,1 +1,0 @@
-python3 -u foodclassifier_train.py data/training/ data/validation/ | tee -a log/log.txt

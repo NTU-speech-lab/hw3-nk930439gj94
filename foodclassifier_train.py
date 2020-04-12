@@ -13,8 +13,8 @@ from utility import *
 
 torch.manual_seed(0)
 
-train_file_path = sys.argv[1]
-valid_file_path = sys.argv[2]
+train_file_path = os.path.join(sys.argv[1], 'training')
+valid_file_path = os.path.join(sys.argv[1], 'validation')
 
 ######################## read data #########################
 

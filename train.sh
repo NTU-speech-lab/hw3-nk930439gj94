@@ -1,1 +1,0 @@
-python3 foodclassifier_train.py data/training/ data/validation/
