@@ -11,8 +11,8 @@ import time
 import sys
 from utility import *
 
-train_file_path = sys.argv[1]
-valid_file_path = sys.argv[2]
+train_file_path = os.path.join(sys.argv[1], 'training')
+valid_file_path = os.path.join(sys.argv[1], 'validation')
 
 print("Reading data")
 train_x, train_y = readfile(train_file_path, True)
@@ -20,9 +20,17 @@ print("Size of training data = {}".format(len(train_x)))
 val_x, val_y = readfile(valid_file_path, True)
 print("Size of validation data = {}".format(len(val_x)))
 
+mean_std = np.load('model/mean_std.npy')
+
+test_transform = transforms.Compose([
+	transforms.ToPILImage(),
+	transforms.ToTensor(),
+	transforms.Normalize(mean_std[0], mean_std[1]),
+])
+
 train_val_x = np.concatenate((train_x, val_x), axis=0)
 train_val_y = np.concatenate((train_y, val_y), axis=0)
-train_val_set = ImgDataset(train_val_x, train_val_y, train_transform)
+train_val_set = ImgDataset(train_val_x, train_val_y, test_transform)
 
 train_val_loader = DataLoader(train_val_set, batch_size=128, shuffle=True)
 
