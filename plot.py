@@ -1,16 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+import sys
 
-log_acc = np.load('log/log_acc.npy')
-log_loss = np.load('log/log_loss.npy')
+log_train_acc = np.load(os.path.join(sys.argv[1], 'log_train_acc.npy'))
+log_val_acc = np.load(os.path.join(sys.argv[1], 'log_val_acc.npy'))
 
-plt.subplot(2,1,1)
-plt.plot(log_acc, 'b', label='accuracy')
+plt.plot(log_train_acc, 'r', label='train_acc')
 plt.legend()
-
-plt.subplot(2,1,2)
-plt.plot(log_loss, 'r', label='loss')
-plt.xlabel('epoch')
+plt.plot(log_val_acc, 'b', label='val_acc')
 plt.legend()
 
 plt.tight_layout()
