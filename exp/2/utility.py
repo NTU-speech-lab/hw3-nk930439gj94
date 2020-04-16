@@ -52,40 +52,15 @@ class Classifier(nn.Module):
 		#torch.nn.MaxPool2d(kernel_size, stride, padding)
 		#input 維度 [3, 128, 128]
 		self.cnn = nn.Sequential(
-			nn.Conv2d(3, 64, 3, 1, 1),  # [64, 128, 128]
-			nn.BatchNorm2d(64),
+			nn.Conv2d(3, 169, 3, 1, 1),  # [169, 128, 128]
+			nn.BatchNorm2d(169),
 			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	  # [64, 64, 64]
+			nn.MaxPool2d(8, 8, 0),	  # [169, 16, 16]
 
-			nn.Conv2d(64, 128, 3, 1, 1), # [128, 64, 64]
-			nn.BatchNorm2d(128),
+			nn.Conv2d(169, 4096, 3, 1, 1), # [4096, 16, 16]
+			nn.BatchNorm2d(4096),
 			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	  # [128, 32, 32]
-
-			nn.Conv2d(128, 256, 3, 1, 1), # [256, 32, 32]
-			nn.BatchNorm2d(256),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	  # [256, 16, 16]
-
-			nn.Conv2d(256, 512, 3, 1, 1), # [512, 16, 16]
-			nn.BatchNorm2d(512),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	   # [512, 8, 8]
-			
-			nn.Conv2d(512, 1024, 3, 1, 1), # [512, 8, 8]
-			nn.BatchNorm2d(1024),
-			nn.ReLU(),
-			nn.MaxPool2d(2, 2, 0),	   # [1024, 4, 4]
-
-			# nn.Conv2d(3, 169, 3, 1, 1),  # [169, 128, 128]
-			# nn.BatchNorm2d(169),
-			# nn.ReLU(),
-			# nn.MaxPool2d(8, 8, 0),	  # [169, 16, 16]
-
-			# nn.Conv2d(169, 4096, 3, 1, 1), # [4096, 16, 16]
-			# nn.BatchNorm2d(4096),
-			# nn.ReLU(),
-			# nn.MaxPool2d(8, 8, 0),	  # [4096, 2, 2]
+			nn.MaxPool2d(8, 8, 0),	  # [4096, 2, 2]
 		)
 		self.fc = nn.Sequential(
 			nn.Linear(1024*4*4, 1024*4),
