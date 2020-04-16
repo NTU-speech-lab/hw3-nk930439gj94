@@ -1,0 +1,1 @@
+python3 foodclassifier_train.py $1
