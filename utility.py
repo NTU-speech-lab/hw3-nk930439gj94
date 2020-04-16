@@ -98,3 +98,10 @@ class Classifier(nn.Module):
 		return self.cnn.__str__() + self.fc.__str__()
 
 ########################## model ###########################
+
+if __name__ == "__main__":
+	model = Classifier()
+	params = model.parameters()
+
+	nParams = sum(p.numel() for p in model.parameters())
+	print(nParams)
